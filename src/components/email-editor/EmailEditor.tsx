@@ -6,7 +6,7 @@ export function EmailEditor() {
     <div>
       <h1>Email Editor</h1>
       <div className={styles.card}>
-        <div className={styles.editor}>
+        <div className={styles.editor} spellCheck='false'>
           Hey! Lorem ipsum, dolor sit amet consectetur adipisicing elit.
           Voluptate debitis provident tempore rerum animi odio distinctio
           laboriosam ab natus voluptatum.

@@ -7,13 +7,20 @@
   .editor {
     padding: 1.2rem;
     padding-bottom: 1.5rem;
+    display: block;
+    width: calc(100% - 2.4rem);
+    min-height: 150px;
+    border: none;
+    outline: none;
+    background: transparent;
+    resize: none;
   }
   .actions {
     background-color: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.3rem 1.2rem;
+    padding: 0.4rem 1.2rem;
 
     .tools {
       > button {
