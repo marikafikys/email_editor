@@ -1,39 +1,30 @@
 import { Eraser, Bold, Italic, Underline } from "lucide-react";
 import styles from "./EmailEditor.module.scss";
-import { useRef, useState } from "react";
-import { TStyle, applyStyle } from "./apply-style";
+// import { useRef, useState } from "react";
+// import { TStyle, applyStyle } from "./apply-style";
 import parse from "html-react-parser";
+import { useEditor } from "./useEditor";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { emailService } from "../../services/email.servise";
 
 export function EmailEditor() {
-  const [text, setText] =
-    useState(`Hey! Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-  Voluptate debitis provident tempore rerum animi odio distinctio
-  laboriosam ab natus voluptatum.`);
+  const { text, setText, textRef, applyFormat, updateSelection } = useEditor();
 
-  const [selectionStart, setSelectionStart] = useState(0);
-  const [selectionEnd, setSelectionEnd] = useState(0);
+  const queryClient = useQueryClient();
 
-  const textRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const updateSelection = () => {
-    if (!textRef.current) return;
-    setSelectionStart(textRef.current?.selectionStart);
-    setSelectionEnd(textRef.current?.selectionEnd);
-  };
-
-  const applyFormat = (type: TStyle) => {
-    const selectedText = text.substring(selectionStart, selectionEnd);
-    if (!selectedText) return;
-    const before = text.substring(0, selectionStart);
-    const after = text.substring(selectionEnd);
-
-    setText(before + applyStyle(type, selectedText) + after);
-  };
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["create email"],
+    mutationFn: () => emailService.sendEmail(text),
+    onSuccess() {
+      setText("");
+      queryClient.refetchQueries({ queryKey: ["email list"] });
+    },
+  });
 
   return (
     <div>
       <h1>Email Editor</h1>
-      <div className={styles.preview}>{parse(text)}</div>
+      {text && <div className={styles.preview}>{parse(text)}</div>}
       <div className={styles.card}>
         <textarea
           ref={textRef}
@@ -60,7 +51,9 @@ export function EmailEditor() {
               <Underline size={17} />
             </button>
           </div>
-          <button>Send now</button>
+          <button disabled={isPending} onClick={() => mutate()}>
+            Send now
+          </button>
         </div>
       </div>
     </div>
